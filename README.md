@@ -74,7 +74,7 @@ Deployment
   ```bash
   docker login
   docker pull levyx/xenon
-  docker rm -f xenon (check if container named xenon already exists)
+  docker rm -f xenon (if a xenon container already exists, remove it)
   docker ps -a (shows presently running dockers)
   docker run -d -t -p 0.0.0.0:41000:41000/tcp \
     --device /dev/vdb:/dev/xenondocker \
