@@ -80,7 +80,7 @@ Deployment
     --device /dev/vdb:/dev/xenondocker \
     --hostname xenon \
     --name xenon levyx/xenon \
-    init.sh /dev/xenondocker 0.0.0.0 41000 0.0.0.0:41000
+    init.sh /dev/xenondocker 0.0.0.0 41000 0.0.0.0:41000 (with /dev/vdb as device on hostside)
   docker logs xenon (check whether xenon is running and also to see logs of docker)
   docker ps -a (check presently running dockers)
   ```
