@@ -74,8 +74,15 @@ Deployment
   ```bash
   docker login
   docker pull levyx/xenon
-  execute load_xenon_docker {device name}
-  docker ps -a to see dockers running
+  docker rm -f xenon (check if container named xenon already exists)
+  docker ps -a (shows presently running dockers)
+  docker run -d -t -p 0.0.0.0:41000:41000/tcp \
+    --device /dev/vdb:/dev/xenondocker \
+    --hostname xenon \
+    --name xenon levyx/xenon \
+    init.sh /dev/xenondocker 0.0.0.0 41000 0.0.0.0:41000
+  docker logs xenon (check whether xenon is running and also to see logs of docker)
+  docker ps -a (check presently running dockers)
   ```
 * Download and install [Confluent Platform](http://www.confluent.io/).
 * Download [kafka-connect-xenon](https://github.com/levyx/kafka-xenon).

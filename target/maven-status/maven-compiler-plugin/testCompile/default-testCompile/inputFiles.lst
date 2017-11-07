@@ -1,0 +1,3 @@
+/root/kafka-xenon/src/test/java/com/levyx/xenon/connector/XenonWrapperTest.java
+/root/kafka-xenon/src/test/java/com/levyx/xenon/connector/XenonSinkConnectorTest.java
+/root/kafka-xenon/src/test/java/com/levyx/xenon/connector/XenonSinkTaskTest.java

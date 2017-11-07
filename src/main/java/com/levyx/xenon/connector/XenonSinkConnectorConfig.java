@@ -41,7 +41,7 @@ class XenonSinkConnectorConfig extends AbstractConfig {
     private static final String XENON_PORT_DOC = "xenon port";
     static final int DEFAULT_XENON_PORT = 41000;
 
-    static final String XENON_BUFFER_CAPACITY = "buffer.capacity";
+    static final String XENON_BUFFER_CAPACITY = "buffer.capacity.bytes";
     private static final String XENON_BUFFER_CAPACITY_DOC = "xenon bytebuffer capacity";
     static final int DEFAULT_XENON_BUFFER_CAPACITY = 100;
 
