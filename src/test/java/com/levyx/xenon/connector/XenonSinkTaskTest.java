@@ -1542,31 +1542,6 @@ public class XenonSinkTaskTest {
         client.disconnect();
     }
 
-    /**
-     * Handling logical types. The check is done using schema.name().
-     * The case below is for pushing Decimal to xenon.
-     * Further fromConnectData is validated for this case.
-     */
-
-    @Test
-    public void testDecimalToJsonCaseE() throws IOException {
-        XenonClient client = checkExist("testDecimalToJsonCaseE");
-        JsonNode jsonNode = objectMapper.readTree(converter.fromConnectData(TOPIC, Decimal.schema(4),
-                new BigDecimal(new BigInteger("156"), 4)));
-        assertEquals(objectMapper.readTree("{ \"type\": \"bytes\", \"optional\": false, "
-                        + "\"name\": \"org.apache.kafka.connect.data.Decimal\", "
-                        + "\"version\": 1, \"parameters\": { \"scale\": \"4\" } }"),
-                jsonNode.get(SCHEMA_NAME));
-        assertArrayEquals(new byte[]{0, -100},
-                jsonNode.get(PAYLOAD_NAME).binaryValue());
-        SinkRecord record = createRecord(Decimal.schema(6),
-                new BigDecimal(new BigInteger("1567888888222211667887995555554442"), 6));
-        Map<String, String> map = buildDecimalCaseE("testDecimalToJsonCaseE");
-        pushToXenon(record, map);
-        readAndVerify("testDecimalToJsonCaseE", record.value());
-        client.disconnect();
-    }
-
 
 
     /**
@@ -2114,24 +2089,9 @@ public class XenonSinkTaskTest {
     /**
      * Function that returns sampleConfig map
      * of XenonConfiguration for pushing values
-     * with schema as Decimal.
+     * with schema as either Array or Map.
      */
-    private Map<String, String> buildDecimalCaseE(String s) {
-        Map<String, String> sampleConfig = new HashMap<>();
-        sampleConfig.put(SCHEMA_VERSION, "1");
-        sampleConfig.put(TOPICS, TOPIC);
-        sampleConfig.put(XENON_DATASET_NAME, s);
-        sampleConfig.put(XENON_DATASET_SCHEMA, "{SymbolID:DECIMAL[36,6]}");
-        return sampleConfig;
-    }
-
-
-    /**
-     * Function that returns sampleConfig map
-     * of XenonConfiguration for pushing values
-     * with schema as Decimal.
-     */
-    private Map<String, String> buildNestedArray(String s, String datasetSchema) {
+    private Map<String, String> buildNestedArrayMap(String s, String datasetSchema) {
         Map<String, String> sampleConfig = new HashMap<>();
         sampleConfig.put(SCHEMA_VERSION, "1");
         sampleConfig.put(TOPICS, TOPIC);
@@ -2225,12 +2185,12 @@ public class XenonSinkTaskTest {
 
         if (!isEqualSchema) {
             SinkRecord record = createRecord(null, list);
-            Map<String, String> mapRec = buildNestedArray(s, datasetSchema);
-            pushToXenon(record, mapRec);
+            Map<String, String> arrRec = buildNestedArrayMap(s, datasetSchema);
+            pushToXenon(record, arrRec);
         }else {
             SinkRecord record = createRecord(recSchema, list);
-            Map<String, String> mapRec = buildNestedArray(s, datasetSchema);
-            pushToXenon(record, mapRec);
+            Map<String, String> arrRec = buildNestedArrayMap(s, datasetSchema);
+            pushToXenon(record, arrRec);
         }
         list.clear();
     }
@@ -2252,9 +2212,9 @@ public class XenonSinkTaskTest {
                 .substring(1, datasetSchema.length() - 1)
                 .split(", ");
         //HashSet to store each field schema value opened in xenon.
-        //If the schema value is same for all fields then all records in
-        //array have same schema.
-        //Else the array is passed with null schema to include records with
+        //If the schema value is same for all fields then all record values in
+        //given map have same schema.
+        //Else the map is passed with null schema to include record values with
         //different schemas.
         Set<String> valueSchema = new HashSet<>();
         for (String field : fields) {
@@ -2321,19 +2281,19 @@ public class XenonSinkTaskTest {
                 list.add(testRec);
             } else if (testRec == null) {
                 throw new ConnectException("Invalid null value for required field "
-                        + "in Array input");
+                        + "as map value ");
             } else {
-                throw new ConnectException("Unacceptable nested array value");
+                throw new ConnectException("Unacceptable nested map value");
             }
         }
 
         if (!isEqualSchema) {
             SinkRecord record = createRecord(null, list);
-            Map<String, String> mapRec = buildNestedArray(s, datasetSchema);
+            Map<String, String> mapRec = buildNestedArrayMap(s, datasetSchema);
             pushToXenon(record, mapRec);
         } else {
             SinkRecord record = createRecord(recSchema, list);
-            Map<String, String> mapRec = buildNestedArray(s, datasetSchema);
+            Map<String, String> mapRec = buildNestedArrayMap(s, datasetSchema);
             pushToXenon(record, mapRec);
         }
         list.clear();
@@ -2541,8 +2501,6 @@ public class XenonSinkTaskTest {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-
-        PowerMock.verifyAll();
     }
 
 
@@ -2580,8 +2538,6 @@ public class XenonSinkTaskTest {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-
-        PowerMock.verifyAll();
     }
 
 
@@ -2697,7 +2653,7 @@ public class XenonSinkTaskTest {
 
 
     /**
-     * Creating xenon dataset schema using collection of records.
+     * Creating xenon dataset schema using map of records.
      *
      * @param map - input record collection as a map.
      * @return schema - datasetSchema as string.
@@ -2811,7 +2767,6 @@ public class XenonSinkTaskTest {
      * Function to compare whether the kafka record pushed is same as the one read from xenon.
      *
      * @param xenonRead   - Record read from xenon.
-     *                    PowerMock.replayAll();
      * @param kafkaRecord - Input kafka record.
      */
 

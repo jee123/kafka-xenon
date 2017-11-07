@@ -61,7 +61,8 @@ class XenonSinkConnectorConfig extends AbstractConfig {
 
     static final String XENON_DATASET_SCHEMA = "dataset.schema";
     private static final String XENON_DATASET_SCHEMA_DOC = "schema associated with the dataset";
-    static final String DEFAULT_XENON_DATASET_SCHEMA = "tmp_schema";
+    static final String DEFAULT_XENON_DATASET_SCHEMA = "{f1:I64, f2:I64, f3:CHAR, "
+            + "f4:DOUBLE, f5:BOOL}";
 
     static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(XENON_NAME,
