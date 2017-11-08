@@ -69,8 +69,8 @@ mvn install:install-file -Dfile=$KAFKA_CONNECTOR_HOME/src/main/resources/XenonCl
 
 Deployment
 ----------------------------
-* Below is a simple deployment example. For more details please contact [Levyx, Inc.](info@levyx.com)
-* Start xenon using docker(as root) as shown below :
+* Below is a simple deployment example. For more details please contact info@levyx.com .
+* Start xenon using docker(as root) shown below :
   ```bash
   Access dockerhub using UID and password.
   docker login
@@ -84,7 +84,8 @@ Deployment
   Check presently running dockers.
   docker ps -a 
   
-  Using /dev/vdb as device on host, we map it to device /dev/xenondocker inside docker. 
+  Xenon requires a raw block device. For example, assume this device is /dev/vdb on your host, run the following command to  
+  map /dev/vdb on your host to /dev/xenondocker inside the docker.
   docker run -d -t -p 0.0.0.0:41000:41000/tcp \
     --device /dev/vdb:/dev/xenondocker \
     --hostname xenon \
