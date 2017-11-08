@@ -69,23 +69,36 @@ mvn install:install-file -Dfile=$KAFKA_CONNECTOR_HOME/src/main/resources/XenonCl
 
 Deployment
 ----------------------------
-* Below is a simple deployment example. For more details please contact [Levyx, Inc.](http://www.levyx.com/contact-us)
-* Start xenon using docker as shown below :
+* Below is a simple deployment example. For more details please contact [Levyx, Inc.](info@levyx.com)
+* Start xenon using docker(as root) as shown below :
   ```bash
+  Access dockerhub using UID and password.
   docker login
+  
+  Download image.
   docker pull levyx/xenon
-  docker rm -f xenon (if a xenon container already exists, remove it)
-  docker ps -a (shows presently running dockers)
+  
+  Remove an already existing xenon container.
+  docker rm -f xenon 
+  
+  Check presently running dockers.
+  docker ps -a 
+  
+  Using /dev/vdb as device on host, we map it to device /dev/xenondocker inside docker. 
   docker run -d -t -p 0.0.0.0:41000:41000/tcp \
     --device /dev/vdb:/dev/xenondocker \
     --hostname xenon \
     --name xenon levyx/xenon \
-    init.sh /dev/xenondocker 0.0.0.0 41000 0.0.0.0:41000 (with /dev/vdb as device on hostside)
-  docker logs xenon (check whether xenon is running and also to see logs of docker)
-  docker ps -a (check presently running dockers)
+    init.sh /dev/xenondocker 0.0.0.0 41000 0.0.0.0:41000 
+  
+  Check to see whether xenon is running and the logs of docker.
+  docker logs xenon 
+  
+  Check presently running dockers.
+  docker ps -a 
   ```
-* Download and install [Confluent Platform](http://www.confluent.io/).
-* Download [kafka-connect-xenon](https://github.com/levyx/kafka-xenon).
+* Download and install [Confluent Platform](http://www.confluent.io/) on the host machine.
+* Download [kafka-connect-xenon](https://github.com/levyx/kafka-xenon) on the host machine.
 * Create a configuration file (``connect-xenon.properties``) for the sink connector(example below):
 ```bash
 name=xenon-sink-connector
@@ -159,7 +172,7 @@ curl -X POST -H "Content-Type: application/json" 'localhost:8083/connectors' -d 
 ```bash
 $CONFLUENT_HOME/bin/kafka-console-producer \
 --broker-list localhost:9092 --topic testOne \
-< /mnt/nvme/tmp/trial.txt &
+< ~/trial.txt &
 ```
 -----
 
